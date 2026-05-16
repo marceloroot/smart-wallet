@@ -6,7 +6,7 @@ final class WalletNotFoundException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Wallet not found.');
+        parent::__construct('Carteira não encontrada.');
     }
 
     public function statusCode(): int

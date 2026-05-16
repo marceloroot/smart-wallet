@@ -26,6 +26,6 @@
         Não tem conta? <a href="{{ route('register') }}">Cadastre-se</a>
     </p>
     <p class="form-footer" style="margin-top:0.5rem;font-size:0.8rem;">
-        Demo: teste1@gmail.com / password123
+        Demo: alice@demo.test / password123
     </p>
 @endsection

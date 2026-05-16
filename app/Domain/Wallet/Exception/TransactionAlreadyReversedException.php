@@ -6,7 +6,7 @@ final class TransactionAlreadyReversedException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Transaction has already been reversed.');
+        parent::__construct('Esta transação já foi estornada.');
     }
 
     public function statusCode(): int

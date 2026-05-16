@@ -6,7 +6,7 @@ final class TransactionNotFoundException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Transaction not found.');
+        parent::__construct('Transação não encontrada.');
     }
 
     public function statusCode(): int

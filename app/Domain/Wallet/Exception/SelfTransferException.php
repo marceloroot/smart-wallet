@@ -6,7 +6,7 @@ final class SelfTransferException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Cannot transfer to your own wallet.');
+        parent::__construct('Não é possível transferir para a própria carteira.');
     }
 
     public function statusCode(): int
