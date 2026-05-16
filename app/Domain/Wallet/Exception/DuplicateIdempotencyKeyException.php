@@ -6,7 +6,7 @@ final class DuplicateIdempotencyKeyException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Operation with this idempotency key already exists.');
+        parent::__construct('Já existe uma operação com esta chave de idempotência.');
     }
 
     public function statusCode(): int

@@ -6,7 +6,7 @@ final class UnauthorizedTransactionException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('You are not allowed to reverse this transaction.');
+        parent::__construct('Você não tem permissão para estornar esta transação.');
     }
 
     public function statusCode(): int

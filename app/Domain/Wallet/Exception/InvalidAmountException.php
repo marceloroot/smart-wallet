@@ -6,7 +6,7 @@ final class InvalidAmountException extends DomainException
 {
     public static function mustBePositive(): self
     {
-        return new self('Amount must be greater than zero.');
+        return new self('O valor deve ser maior que zero.');
     }
 
     public function statusCode(): int
