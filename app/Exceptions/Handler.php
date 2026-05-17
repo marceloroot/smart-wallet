@@ -2,7 +2,8 @@
 
 namespace App\Exceptions;
 
-use App\Domain\Wallet\Exception\DomainException;
+use App\Domain\Identity\Exception\DomainException as IdentityDomainException;
+use App\Domain\Wallet\Exception\DomainException as WalletDomainException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,8 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
-        DomainException::class,
+        WalletDomainException::class,
+        IdentityDomainException::class,
     ];
 
     /**
@@ -53,7 +55,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
-        if ($e instanceof DomainException) {
+        if ($e instanceof WalletDomainException || $e instanceof IdentityDomainException) {
             Log::warning('domain_error', [
                 'error_code' => $e->errorCode(),
                 'status' => $e->statusCode(),

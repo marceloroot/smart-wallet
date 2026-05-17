@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Application\Wallet\Register\RegisterUserCommand;
-use App\Application\Wallet\Register\RegisterUserHandler;
+use App\Application\Identity\Register\RegisterUserCommand;
+use App\Application\Identity\Register\RegisterUserHandler;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -42,13 +43,13 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): RedirectResponse
     {
-        $user = $this->registerUserHandler->handle(new RegisterUserCommand(
+        $result = $this->registerUserHandler->handle(new RegisterUserCommand(
             name: $request->validated('name'),
             email: $request->validated('email'),
             password: $request->validated('password'),
         ));
 
-        Auth::login($user);
+        Auth::login(User::query()->findOrFail($result->userId));
 
         return redirect()->route('dashboard')->with('success', 'Conta criada com sucesso!');
     }

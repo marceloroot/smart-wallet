@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Application\Wallet\Deposit\DepositCommand;
 use App\Application\Wallet\Deposit\DepositHandler;
-use App\Application\Wallet\Register\RegisterUserCommand;
-use App\Application\Wallet\Register\RegisterUserHandler;
+use App\Application\Identity\Register\RegisterUserCommand;
+use App\Application\Identity\Register\RegisterUserHandler;
 use Illuminate\Database\Seeder;
 
 class WalletDemoSeeder extends Seeder
@@ -28,12 +28,12 @@ class WalletDemoSeeder extends Seeder
         ));
 
         $deposit->handle(new DepositCommand(
-            userId: $alice->id,
+            userId: $alice->userId,
             amountCents: 100000,
         ));
 
         $deposit->handle(new DepositCommand(
-            userId: $bob->id,
+            userId: $bob->userId,
             amountCents: 50000,
         ));
     }

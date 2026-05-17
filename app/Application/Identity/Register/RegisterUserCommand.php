@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Wallet\Register;
+namespace App\Application\Identity\Register;
 
 final class RegisterUserCommand
 {
