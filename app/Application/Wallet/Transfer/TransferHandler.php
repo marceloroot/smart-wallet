@@ -10,6 +10,7 @@ use App\Domain\Wallet\Exception\WalletNotFoundException;
 use App\Domain\Wallet\Repository\TransactionWriterInterface;
 use App\Domain\Wallet\Repository\WalletRepositoryInterface;
 use App\Domain\Wallet\ValueObject\Money;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 final class TransferHandler
@@ -30,6 +31,13 @@ final class TransferHandler
             $existing = $this->walletRepository->findTransactionByIdempotencyKey($command->idempotencyKey);
             if ($existing) {
                 $wallet = $this->walletRepository->findById($existing->walletId);
+
+                Log::info('wallet.transfer.idempotent_hit', [
+                    'from_user_id' => $command->fromUserId,
+                    'to_user_id' => $command->toUserId,
+                    'transaction_id' => $existing->id,
+                    'idempotency_key' => $command->idempotencyKey,
+                ]);
 
                 return new TransactionResult(
                     $existing->id,
@@ -88,13 +96,24 @@ final class TransferHandler
                 idempotencyKey: null,
             ));
 
-            return new TransactionResult(
+            $result = new TransactionResult(
                 $outEntry->id,
                 TransactionType::TRANSFER_OUT,
                 $amount->cents(),
                 $origin->balance()->cents(),
                 $transferGroupId,
             );
+
+            Log::info('wallet.transfer.completed', [
+                'from_user_id' => $command->fromUserId,
+                'to_user_id' => $command->toUserId,
+                'transaction_id' => $result->transactionId,
+                'amount_cents' => $result->amountCents,
+                'transfer_group_id' => $transferGroupId,
+                'idempotency_key' => $command->idempotencyKey,
+            ]);
+
+            return $result;
         });
     }
 }

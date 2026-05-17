@@ -11,6 +11,7 @@ use App\Domain\Wallet\Exception\TransactionNotFoundException;
 use App\Domain\Wallet\Exception\UnauthorizedTransactionException;
 use App\Domain\Wallet\Repository\TransactionWriterInterface;
 use App\Domain\Wallet\Repository\WalletRepositoryInterface;
+use Illuminate\Support\Facades\Log;
 
 final class ReverseTransactionHandler
 {
@@ -22,7 +23,7 @@ final class ReverseTransactionHandler
 
     public function handle(ReverseTransactionCommand $command): TransactionResult
     {
-        return $this->walletRepository->transaction(function () use ($command) {
+        $result = $this->walletRepository->transaction(function () use ($command) {
             $ledgerEntry = $this->walletRepository->findTransactionById($command->transactionId);
 
             if (! $ledgerEntry) {
@@ -45,6 +46,16 @@ final class ReverseTransactionHandler
 
             return $this->reverseSingleEntry($ledgerEntry, $wallet->id());
         });
+
+        Log::info('wallet.reverse.completed', [
+            'user_id' => $command->userId,
+            'original_transaction_id' => $command->transactionId,
+            'reversal_transaction_id' => $result->transactionId,
+            'amount_cents' => $result->amountCents,
+            'transfer_group_id' => $result->transferGroupId,
+        ]);
+
+        return $result;
     }
 
     private function reverseSingleEntry(LedgerEntry $entry, int $walletId): TransactionResult

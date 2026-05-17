@@ -9,6 +9,7 @@ use App\Domain\Wallet\Exception\WalletNotFoundException;
 use App\Domain\Wallet\Repository\TransactionWriterInterface;
 use App\Domain\Wallet\Repository\WalletRepositoryInterface;
 use App\Domain\Wallet\ValueObject\Money;
+use Illuminate\Support\Facades\Log;
 
 final class DepositHandler
 {
@@ -24,6 +25,12 @@ final class DepositHandler
             $existing = $this->walletRepository->findTransactionByIdempotencyKey($command->idempotencyKey);
             if ($existing) {
                 $wallet = $this->walletRepository->findById($existing->walletId);
+
+                Log::info('wallet.deposit.idempotent_hit', [
+                    'user_id' => $command->userId,
+                    'transaction_id' => $existing->id,
+                    'idempotency_key' => $command->idempotencyKey,
+                ]);
 
                 return new TransactionResult(
                     $existing->id,
@@ -57,12 +64,22 @@ final class DepositHandler
                 idempotencyKey: $command->idempotencyKey,
             ));
 
-            return new TransactionResult(
+            $result = new TransactionResult(
                 $entry->id,
                 TransactionType::DEPOSIT,
                 $amount->cents(),
                 $wallet->balance()->cents(),
             );
+
+            Log::info('wallet.deposit.completed', [
+                'user_id' => $command->userId,
+                'transaction_id' => $result->transactionId,
+                'amount_cents' => $result->amountCents,
+                'balance_cents' => $result->balanceCents,
+                'idempotency_key' => $command->idempotencyKey,
+            ]);
+
+            return $result;
         });
     }
 }
