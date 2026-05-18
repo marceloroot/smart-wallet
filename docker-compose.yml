@@ -10,6 +10,7 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: "https://marcelodlg.com.br"
+      SESSION_SECURE_COOKIE: "true"
       APP_KEY: "base64:rPqEd0c2CMV2dQOvcHC1hxjf6YTfQnzZooipmQDjXXI="
       LOG_CHANNEL: json
       LOG_LEVEL: info
@@ -31,12 +32,18 @@ services:
           memory: 512M
       labels:
         - "traefik.enable=true"
+        - "traefik.docker.network=traefik_public"
+        - "traefik.http.services.smart_wallet.loadbalancer.server.port=3020"
         - "traefik.http.routers.smart_wallet.rule=Host(`marcelodlg.com.br`)"
-        - "traefik.http.routers.smart_wallet.tls.certresolver=le"
         - "traefik.http.routers.smart_wallet.entrypoints=websecure"
         - "traefik.http.routers.smart_wallet.tls=true"
+        - "traefik.http.routers.smart_wallet.tls.certresolver=le"
         - "traefik.http.routers.smart_wallet.service=smart_wallet"
-        - "traefik.http.services.smart_wallet.loadbalancer.server.port=3020"
+        - "traefik.http.routers.smart_wallet_http.rule=Host(`marcelodlg.com.br`)"
+        - "traefik.http.routers.smart_wallet_http.entrypoints=web"
+        - "traefik.http.routers.smart_wallet_http.middlewares=smart_wallet_redirect_https"
+        - "traefik.http.middlewares.smart_wallet_redirect_https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.smart_wallet_redirect_https.redirectscheme.permanent=true"
 
 networks:
   traefik_public:
